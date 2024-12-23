@@ -1,9 +1,3 @@
-# 
-# Name: Link Remover Telegram Bot
-# Author: Max Base
-# Date: 2022/10/20
-# Repository: https://github.com/BaseMax/LinkRemoverTelegramBot
-# 
 from telebot import TeleBot
 
 # config
@@ -19,40 +13,39 @@ def check_message(type, message):
     print("\n\n\n\n==============\n\n\n")
     print(type, message)
 
+    # Allow admins to send any message
     if message.from_user.id in ADMINS:
         return
 
-    # check getChatMember, check is creator or administrator
+    # Check if the sender is a group admin
     chat_member = app.get_chat_member(message.chat.id, message.from_user.id)
     print("==================> User data:", chat_member)
-    if chat_member.status == 'creator' or chat_member.status == 'administrator':
+    if chat_member.status in ['creator', 'administrator']:
         return
     if chat_member.status == 'left' and chat_member.user.username == 'GroupAnonymousBot':
         return
 
-    if message.text.find('@') != -1:
-        print("Found username in message text")
+    # Check for restricted content and delete the message
+    if any(keyword in message.text for keyword in ['@', 't.me', 'http://', 'https://', '.com', '.ir']):
+        print("Found restricted content in message text")
         app.delete_message(message.chat.id, message.message_id)
-    elif message.text.find('t.me') != -1:
-        print("Found link to username in message text")
-        app.delete_message(message.chat.id, message.message_id)
-    elif message.text.find('http://') != -1 or message.text.find('https://') != -1:
-        print("Found link to website in message text")
-        app.delete_message(message.chat.id, message.message_id)
-    elif message.text.find('.com') != -1 or message.text.find('.ir') != -1:
-        print("Found link to website in message text")
-        app.delete_message(message.chat.id, message.message_id)
+        
+        # Send a warning message after deleting the restricted message
+        app.send_message(
+            message.chat.id, 
+            f"{message.from_user.first_name}⚠️ហាមផ្ញើរលីងចូលក្នុងក្រុម!"
+        )
 
-# edit message listener
+# Handle edited messages
 @app.edited_message_handler(func=lambda message: True)
 def edit_message(message):
     check_message("edit", message)
 
-# new message listener
+# Handle new messages
 @app.message_handler(func=lambda message: True)
 def new_message(message):
     check_message("new", message)
-web: python remove-url.py
-# keep alive
+
+# Keep the bot running
 if __name__ == '__main__':
     app.infinity_polling()
