@@ -52,7 +52,7 @@ def edit_message(message):
 @app.message_handler(func=lambda message: True)
 def new_message(message):
     check_message("new", message)
-
+web: python remove-url.py
 # keep alive
 if __name__ == '__main__':
     app.infinity_polling()
