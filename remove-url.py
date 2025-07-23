@@ -2,7 +2,7 @@
 from telebot import TeleBot
 
 # Config
-TOKEN = '7117279339:AAFxBSkgEqd8XCkJOmHqUyVrYKClcz8Z2pI'
+TOKEN = '8026623306:AAFecowylr4SCcSWG1_SVq5AxDPDM9kBW9w'
 LOG_GROUP_ID = -1002290955861  # Replace with your admin group chat ID
 
 # Restricted keywords
